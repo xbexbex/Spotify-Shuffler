@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
  * @author Owner
  */
 public class MainLogicTest {
+    private MainLogic logic;
     
     public MainLogicTest() {
     }
@@ -31,11 +32,14 @@ public class MainLogicTest {
     
     @Before
     public void setUp() {
+        logic = new MainLogic();
     }
     
     @After
     public void tearDown() {
     }
+    
+    
 
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
