@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
     <action>
-        <actionName>CUSTOM-pit</actionName>
-        <displayName>pit</displayName>
-        <goals>
-            <goal>org.pitest:pitest-maven:mutationCoverage</goal>
-        </goals>
-    </action>
-    <action>
         <actionName>run</actionName>
         <packagings>
             <packaging>jar</packaging>
@@ -17,7 +10,7 @@
             <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
         </goals>
         <properties>
-            <exec.args>-classpath %classpath Main</exec.args>
+            <exec.args>-classpath %classpath spotifysystem.Main</exec.args>
             <exec.executable>java</exec.executable>
         </properties>
     </action>
@@ -27,6 +20,13 @@
         <goals>
             <goal>jxr:jxr</goal>
             <goal>checkstyle:checkstyle</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-pit</actionName>
+        <displayName>pit</displayName>
+        <goals>
+            <goal>org.pitest:pitest-maven:mutationCoverage</goal>
         </goals>
     </action>
 </actions>
