@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package spotifysystemTest.logic;
 
-import com.wrapper.spotify.Api;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -13,6 +8,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import spotifysystem.logic.AuthHandler;
 import static org.junit.Assert.*;
+import org.junit.ClassRule;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+import spotifysystem.logic.MainLogic;
+import spotifysystem.logic.WebSite;
 
 /**
  *
@@ -20,8 +19,11 @@ import static org.junit.Assert.*;
  */
 public class AuthHandlerTest {
 
+    static String code;
+
     public AuthHandlerTest() {
     }
+
 
     @BeforeClass
     public static void setUpClass() {
@@ -33,6 +35,8 @@ public class AuthHandlerTest {
 
     @Before
     public void setUp() {
+        WebSite.logIn("shufflertest", "1234");
+        code = WebSite.getCode();
     }
 
     @After
@@ -45,26 +49,4 @@ public class AuthHandlerTest {
         assertTrue(status < 2);
     }
 
-    @Test
-    public void apiBuilderTest() {
-        Api testApi = Api.builder()
-                .clientId("cb4d60eaad584defba20088354bf6bbc")
-                .clientSecret("895f9958fdd04170a1095adf5ad83ef3")
-                .redirectURI("http://localhost:8888/callback")
-                .build();
-        Api api = AuthHandler.returnApi(true);
-        assertTrue(api.equals(testApi));
-    }
-
-    @Test
-    public void apiBuilderTest2() {
-        Api testApi = Api.builder()
-                .accessToken("1234")
-                .refreshToken("4321")
-                .build();
-        AuthHandler.setAToken("1234");
-        AuthHandler.setRToken("4321");
-        Api api = AuthHandler.returnApi(false);
-        assertTrue(api.equals(testApi));
-    }
 }

@@ -1,17 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package spotifysystem.logic;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Timer running for AuthHandler
+ * @author xbexbex
+ */
 public class AuthTimer extends Timer {
 
     public TimerTask timerTask;
 
+    /**
+     * Creates a timer which calls AuthHandler's refresh method when the time runs out.
+     * @param t time in seconds
+     * @see AuthHandler.refresh()
+     */
     public void start(int t) {
         timerTask = new TimerTask() {
             @Override
@@ -22,6 +27,12 @@ public class AuthTimer extends Timer {
         this.schedule(timerTask, toMS(t));
     }
 
+    /**
+     * Restarts the timer with new time.
+     * @param t time in seconds
+     * @see start()
+     * @see AuthHandler.refresh()
+     */
     public void restart(int t) {
         timerTask.cancel();
         timerTask = new TimerTask() {
@@ -33,6 +44,11 @@ public class AuthTimer extends Timer {
         this.schedule(timerTask, toMS(t));
     }
     
+    /**
+     * Seconds to milliseconds
+     * @param t time in seconds
+     * @return time in milliseconds
+     */
     public int toMS(int t) {
         if (t < 0) {
             return 0;

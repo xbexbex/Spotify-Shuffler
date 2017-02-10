@@ -9,6 +9,10 @@ import com.wrapper.spotify.models.AuthorizationCodeCredentials;
 import com.wrapper.spotify.models.Page;
 import com.wrapper.spotify.models.SimplePlaylist;
 
+/**
+ * Handles all authentication related things with spotify web api
+ * @author xbexbex
+ */
 public class AuthHandler {
 
     static String clientId = "cb4d60eaad584defba20088354bf6bbc";
@@ -18,12 +22,18 @@ public class AuthHandler {
     static String accessToken;
     static String refreshToken;
     static int status;
+    static Api api;
     private static AuthTimer timer = null;
 
+    /**
+     *
+     * @param s authorization code
+     * @return error code, 0 if successfull
+     */
     public static int getTokens(String s) {
         status = 0;
         code = s;
-        final Api api = returnApi(true);
+        api = returnApi();
         final SettableFuture<AuthorizationCodeCredentials> authorizationCodeCredentialsFuture = api.authorizationCodeGrant(code).build().getAsync();
         Futures.addCallback(authorizationCodeCredentialsFuture, new FutureCallback<AuthorizationCodeCredentials>() {
             @Override
@@ -52,8 +62,11 @@ public class AuthHandler {
         return status;
     }
 
-    public static int refresh() {
-        Api api = returnApi(false);
+    /**
+     * Updates the spotify web api accesstoken by using the old access and refresh tokens
+     */
+    public static void refresh() {
+        api = Api.builder().accessToken(accessToken).build();
         final UserPlaylistsRequest request = api.getPlaylistsForUser(MainLogic.getUsername()).build();
         try {
             final Page<SimplePlaylist> playlistsPage = request.get();
@@ -61,34 +74,32 @@ public class AuthHandler {
                 MainLogic.print(playlist.getName());
             }
         } catch (Exception e) {
+            MainLogic.print(e.getMessage());
             int status = getTokens(code);
-            if (status < 2) {
-                MainLogic.logIn();
-            } else {
-                timer.restart(status);
-            }
+//            if (status < 2) {
+//                MainLogic.logIn();
+//            } else {
+//                timer.restart(status);
+//            }
         }
-        return 0;
     }
 
-    public static Api returnApi(boolean type) {
-        if (type = true) {
-            return Api.builder()
-                    .clientId(clientId)
-                    .clientSecret(clientSecret)
-                    .redirectURI(redirectUri)
-                    .build();
-        }
+    /**
+     * Builds and api with the static class parameters
+     * @return built api
+     */
+    public static Api returnApi() {
         return Api.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .redirectURI(redirectUri)
                 .build();
     }
-    
+
     public static void setAToken(String t) {
         accessToken = t;
     }
-    
+
     public static void setRToken(String t) {
         refreshToken = t;
     }

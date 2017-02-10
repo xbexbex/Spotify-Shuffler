@@ -5,18 +5,16 @@
  */
 package spotifysystemTest.logic;
 
-import spotifysystem.logic.MainLogic;
-import spotifysystem.logic.WebSite;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import spotifysystem.logic.MainLogic;
-import spotifysystem.logic.MainLogic;
-import spotifysystem.logic.WebSite;
 import spotifysystem.logic.WebSite;
 import static org.junit.Assert.*;
+import org.junit.ClassRule;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 /**
  *
@@ -25,8 +23,10 @@ import static org.junit.Assert.*;
 public class MainLogicTest {
 
     public MainLogicTest() {
+
     }
 
+    
     @BeforeClass
     public static void setUpClass() {
     }
@@ -37,6 +37,7 @@ public class MainLogicTest {
 
     @Before
     public void setUp() {
+        MainLogic.go();
     }
 
     @After
@@ -45,8 +46,8 @@ public class MainLogicTest {
 
     @Test
     public void msgLogTest() {
-        MainLogic.print("test");
-        assertTrue(MainLogic.getLog().equals("test"));
+        MainLogic.print("test1");
+        assertTrue(MainLogic.returnLastLine().equals("test1"));
     }
 
     @Test
@@ -56,9 +57,9 @@ public class MainLogicTest {
     }
 
     @Test
-    public void logInPasswordTest() {
+    public void logInFalseCodeTest() {
         MainLogic.logIn("absolutelyfalseusername", new char[]{1, 2, 3});
-        assertTrue(MainLogic.getPassword().equals("123"));
+        assertTrue(MainLogic.getLog().equals("Incorrect username or password"));
     }
 
     @Test

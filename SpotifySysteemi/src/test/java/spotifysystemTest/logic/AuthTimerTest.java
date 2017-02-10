@@ -22,8 +22,8 @@ import static org.junit.Assert.*;
  */
 public class AuthTimerTest {
 
-    private static boolean status;
-    private AuthTimer timer;
+    private static boolean status = false;
+    private static AuthTimer timer;
 
     public AuthTimerTest() {
     }
@@ -42,7 +42,7 @@ public class AuthTimerTest {
 
     @Before
     public void setUp() {
-        status = false;
+
         timer = new AuthTimer() {
             @Override
             public void start(int t) {
@@ -71,6 +71,8 @@ public class AuthTimerTest {
 
     @After
     public void tearDown() {
+        timer = null;
+        status = false;
     }
 
     @Test
@@ -78,43 +80,43 @@ public class AuthTimerTest {
         int toMS = timer.toMS(1);
         assertTrue(toMS == 1000);
     }
-    
+
     @Test
     public void checkIfConversionToMillisecondsWorksWithZero() {
         int toMS = timer.toMS(0);
         assertTrue(toMS == 0);
     }
-    
+
     @Test
     public void checkIfConversionToMillisecondsWorksWithNegatives() {
         int toMS = timer.toMS(-100);
         assertTrue(toMS == 0);
     }
 
-    @Test
-    public void checkIfTimerStartWorks() throws Exception {
-        timer.start(1000);
-        Thread.sleep(1005);
-        if (status == true) {
-            status = false;
-            assertTrue(true);
-        }
-        assertFalse(true);
-    }
-    
-    @Test
-    public void checkIfTimerRestartWorks() throws Exception {
-        timer.start(1000000000);
-        Thread.sleep(1000);
-        timer.restart(1000);
-        Thread.sleep(1005);
-        if (status == true) {
-            status = false;
-            assertTrue(true);
-        }
-        assertFalse(true);
-    }
-    
+//    @Test
+//    public void checkIfTimerStartWorks() throws Exception {
+//        timer.start(1000);
+//        Thread.sleep(1005);
+//        if (status == true) {
+//            status = false;
+//            assertTrue(true);
+//        }
+//        assertFalse(true);
+//    }
+//
+//    @Test
+//    public void checkIfTimerRestartWorks() throws Exception {
+//        timer.start(1000000000);
+//        Thread.sleep(1000);
+//        timer.restart(1000);
+//        Thread.sleep(1005);
+//        if (status == true) {
+//            status = false;
+//            assertTrue(true);
+//        }
+//        assertFalse(true);
+//    }
+
     @Test
     public void checkIfTimerRestartWorks2() throws Exception {
         timer.start(1000);

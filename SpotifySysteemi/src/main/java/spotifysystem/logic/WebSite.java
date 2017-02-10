@@ -3,70 +3,97 @@ package spotifysystem.logic;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.WebResponseData;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSpan;
+import com.gargoylesoftware.htmlunit.util.NameValuePair;
+import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
+import java.io.IOException;
+import org.apache.http.conn.HttpHostConnectException;
 import spotifysystem.gui.MainGUI;
 
+/**
+ * Handles logging into spotify with a browser
+ * @author xbexbex
+ */
 public class WebSite {
 
-    private final static String AUTHPAGE = "https://accounts.spotify.com/en/authorize?client_id=cb4d60eaad584defba20088354bf6bbc&response_type=code&redirect_uri=http:%2F%2Flocalhost:8888%2Fcallback&scope=playlist-modify-public%20playlist-modify-private%20user-read-private%20user-library-modify%20user-library-read&state=nostate";
+    private final static String AUTHPAGE = "https://accounts.spotify.com/en/authorize?client_id=cb4d60eaad584defba20088354bf6bbc&response_type=code&redirect_uri=http:%2F%2Flocalhost:8888%2Fcallback&scope=playlist-modify-public%20playlist-modify-private%20user-library-modify%20user-library-read%20playlist-read-private%20playlist-read-collaborative&state=nostate";
     private static WebClient webClient;
     private static HtmlPage page = null;
     private static String code;
 
+    /**
+     * Main method for logging into spotify
+     * @param un
+     * @param pw
+     * @see checkState()
+     * @see setUp()
+     * @return error message String, null if successful
+     */
     public static String logIn(String un, String pw) {
-        setUp();
         code = "";
-        if (!(openPage())) {
-            return "Unable to connect to Spotify";
-        }
-        int i = 0;
-        while (i < 14) {
-            int state = checkState();
-            MainLogic.print(state + "");
-            MainLogic.print(page.asXml());
-            if (state == 0) {
-                break;
-            } else if (state == 1) {
-                if (connectToSpotify()) {
+        try {
+            setUp();
+            openPage();
+            int i = 0;
+            while (i < 14) {
+                int state = checkState();
+                if (state == 1) {
+                    connectToSpotify();
+                    i += 2;
+                } else if (state == 2) {
+                    i += 2;
+                    logInToSpotify(un, pw);
+                } else if (state == 3) {
+                    i += 2;
+                    authorize();
+                } else if (state == 4) {
+                    openPage();
                     i += 3;
-                } else {
-                    return "Unable to connect to Spotify";
+                } else if (state == 6) {
+                    webClient.close();
+                    return "Incorrect username or password";
+                } else if (state == 7) {
+                    openPage();
+                    i += 2;
+                } else if (state == 5) {
+                    break;
                 }
-            } else if (state == 2) {
-                i += 2;
-                if (!(logInToSpotify(un, pw))) {
-                    return "Unable to log in to Spotify";
-                }
-                String e = credentialsCheck();
-                if (e.equals("l")) {
-                    i += 1;
-                } else if (!e.equals("s")) {
-                    return e;
-                }
-            } else if (state == 3) {
-                String url = authorize();
-                if (url.equals("l")) {
-                    return "Spotify is not responding. Please try again later.";
-                } else {
-                    code = url.substring(url.indexOf("=") + 1, url.indexOf("&"));
-                    return url;
-                }
-            } else if (state == 4) {
-                openPage();
-                i += 3;
+            }
+            webClient.close();
+            if (code.equals("")) {
+                return "Unable to connect to Spotify. Try again later.";
+            }
+            return "";
+        } catch (Exception e) {
+            webClient.close();
+            if (code.equals("")) {
+                return "Something went wrong. Try again later.";
             } else {
-                break;
+                return "";
             }
         }
-        return "Spotify is currently stuck. Please try again later.";
     }
 
     private static int checkState() {
         try {
+            if (!(code.equals(""))) {
+                return 5;
+            }
+            HtmlSpan s = page.getFirstByXPath("//span[text()='Incorrect username or password.']");
+            if (s != null) {
+                return 6;
+            }
+            s = page.getFirstByXPath("//span[text()='Your request failed. Please try again.']");
+            if (s != null) {
+                return 7;
+            }
             HtmlAnchor a = (HtmlAnchor) page.getFirstByXPath("//a[text()='Log in to Spotify']");
             if (a != null) {
                 return 1;
@@ -75,130 +102,79 @@ public class WebSite {
             if (login != null) {
                 return 2;
             }
-            HtmlButton b = page.getFirstByXPath("//button[text()='Okay']");
-            if (b != null) {
+            login = page.getFirstByXPath("//button[text()='Okay']");
+            if (login != null) {
                 return 3;
             }
             a = (HtmlAnchor) page.getFirstByXPath("//a[text()='Account Settings']");
             if (a != null) {
                 return 4;
             }
-
         } catch (Exception e) {
             return 0;
         }
         return 0;
     }
 
-    private static boolean openPage() {
-        try {
-            page = (HtmlPage) webClient.getPage(AUTHPAGE);
-            webClient.waitForBackgroundJavaScript(50000);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    private static void openPage() throws Exception {
+        page = (HtmlPage) webClient.getPage(AUTHPAGE);
+        webClient.waitForBackgroundJavaScript(50000);
     }
 
-    private static boolean connectToSpotify() {
-        try {
-            HtmlAnchor a = (HtmlAnchor) page.getAnchorByText("Log in to Spotify");
-            page = a.click();
-            webClient.waitForBackgroundJavaScript(50000);
-            return true;
-        } catch (Exception e) {
-            return false;
-        } finally {
-            return true;
-        }
+    private static void connectToSpotify() throws Exception {
+        HtmlAnchor a = (HtmlAnchor) page.getAnchorByText("Log in to Spotify");
+        page = a.click();
+        webClient.waitForBackgroundJavaScript(50000);
     }
 
-    private static boolean logInToSpotify(String un, String pw) {
-        try {
-            HtmlInput username = page.getHtmlElementById("login-username");
-            username.setValueAttribute(un);
-            HtmlInput password = page.getHtmlElementById("login-password");
-            password.setValueAttribute(pw);
-            HtmlButton login = (HtmlButton) page.getFirstByXPath("//button[text()='Log In']");
-            page = login.click();
-            webClient.waitForBackgroundJavaScript(50000);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
+    private static void logInToSpotify(String un, String pw) throws Exception {
+        HtmlInput username = page.getHtmlElementById("login-username");
+        username.setValueAttribute(un);
+        HtmlInput password = page.getHtmlElementById("login-password");
+        password.setValueAttribute(pw);
+        webClient.getOptions().setRedirectEnabled(true);
+        HtmlButton login = (HtmlButton) page.getFirstByXPath("//button[text()='Log In']");
+        page = login.click();
+        webClient.waitForBackgroundJavaScript(50000);
     }
 
-    private static String credentialsCheck() {
-        try {
-            webClient.waitForBackgroundJavaScript(50000);
-            HtmlSpan s = page.getFirstByXPath("//span[text()='Incorrect username or password.']");
-            if (s != null) {
-                return "Incorrect credentials";
-            }
-            s = page.getFirstByXPath("//span[text()='Your request failed. Please try again.']");
-            if (s != null) {
-                return "l";
-            }
-            return "s";
-        } catch (Exception e) {
-            return "Unable to complete login";
-        }
-    }
-
-    private static String authorize() {
-        try {
-            HtmlButton b = page.getFirstByXPath("//button[text()='Okay']");
-            page = b.click();
-            webClient.waitForBackgroundJavaScript(50000);
-            return page.toString();
-        } catch (Exception e) {
-            return "l";
-        }
+    private static void authorize() throws Exception {
+        HtmlButton b = page.getFirstByXPath("//button[text()='Okay']");
+        page = b.click();
+        webClient.waitForBackgroundJavaScript(50000);
     }
 
     private static void setUp() {
         webClient = new WebClient(BrowserVersion.CHROME);
+        webClient.getOptions().setRedirectEnabled(true);
         webClient.getOptions().setCssEnabled(true);
         webClient.setCssErrorHandler(new SilentCssErrorHandler());
         webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
         webClient.getOptions().setThrowExceptionOnScriptError(false);
-        webClient.getOptions().setRedirectEnabled(false);
-        webClient.getOptions().setAppletEnabled(false);
+        webClient.getOptions().setAppletEnabled(true);
         webClient.getOptions().setJavaScriptEnabled(true);
-        webClient.getOptions().setPopupBlockerEnabled(true);
         webClient.getOptions().setTimeout(5000);
-        webClient.getOptions().setPrintContentOnFailingStatusCode(false);
+
+        new WebConnectionWrapper(webClient) {
+            public WebResponse getResponse(WebRequest request) throws IOException {
+                WebResponse response = super.getResponse(request);
+                try {
+                    String s = response.getResponseHeaderValue("Location");
+                    if (s.contains("code=")) {
+                        webClient.getOptions().setTimeout(100);
+                        code = s.substring(s.indexOf("=") + 1, s.indexOf("&"));
+                    } else {
+                        webClient.getOptions().setTimeout(5000);
+                    }
+                } catch (Exception e) {
+
+                }
+                return response;
+            }
+        };
     }
 
     public static String getCode() {
         return code;
-    }
-
-    private static void debugmonster(String un, String pw) {
-        try {
-            page = (HtmlPage) webClient.getPage(AUTHPAGE);
-            webClient.waitForBackgroundJavaScript(50000);
-            HtmlAnchor a = (HtmlAnchor) page.getAnchorByText("Log in to Spotify");
-            page = a.click();
-            webClient.waitForBackgroundJavaScript(50000);
-            HtmlInput username = page.getHtmlElementById("login-username");
-            username.setValueAttribute(un);
-            HtmlInput password = page.getHtmlElementById("login-password");
-            password.setValueAttribute(pw);
-            HtmlButton login = (HtmlButton) page.getFirstByXPath("//button[text()='Log In']");
-            page = login.click();
-            webClient.waitForBackgroundJavaScript(50000);
-            page = (HtmlPage) webClient.getPage(AUTHPAGE);
-            webClient.waitForBackgroundJavaScript(50000);
-            HtmlButton b = page.getFirstByXPath("//button[text()='Okay']");
-            if (b != null) {
-                MainLogic.print(pw);
-            }
-            page = b.click();
-            webClient.waitForBackgroundJavaScript(50000);
-            MainLogic.print(page.toString());
-        } catch (Exception e) {
-
-        }
     }
 }
