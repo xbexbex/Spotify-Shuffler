@@ -8,4 +8,4 @@
 
 [checkstyle](https://htmlpreview.github.io/?https://github.com/xbexbex/SpotifySysteemi/blob/master/dokumentaatio/checkstyle/site/checkstyle.html)
 
-[pit-testi](dokumentaatio/pit/201702031942/pit_ei_vielakaan_toimi_tuntien_saatamisen_jalkeen_ja_luo_vain_tyhjan_kansion.txt)
+[pit-testi](https://htmlpreview.github.io/?https://github.com/xbexbex/SpotifySysteemi/blob/master/dokumentaatio/pit/201702102056/index.html)
