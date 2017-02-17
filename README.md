@@ -8,4 +8,4 @@
 
 [checkstyle](https://htmlpreview.github.io/?https://github.com/xbexbex/SpotifySysteemi/blob/master/dokumentaatio/checkstyle/site/checkstyle.html)
 
-[pit-testi](https://htmlpreview.github.io/?https://github.com/xbexbex/SpotifySysteemi/blob/master/dokumentaatio/pit/201702102056/index.html)
+[pit-testi](https://htmlpreview.github.io/?https://github.com/xbexbex/SpotifySysteemi/blob/master/dokumentaatio/pit/201702172320/index.html)
