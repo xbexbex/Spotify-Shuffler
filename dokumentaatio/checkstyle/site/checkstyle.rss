@@ -25,8 +25,8 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2017</copyright>
     <item>
-      <title>File: 7,
-             Errors: 0,
+      <title>File: 8,
+             Errors: 1,
              Warnings: 0,
              Infos: 0
       </title>
@@ -116,7 +116,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="${project.url}/checkstyle.html#spotifysystem.logic.AuthHandler.java">spotifysystem/logic/AuthHandler.java</a>
+                  <a href="${project.url}/checkstyle.html#spotifysystem.logic.Playlist.java">spotifysystem/logic/Playlist.java</a>
                 </td>
                 <td>
                   0
@@ -126,6 +126,20 @@ under the License.
                 </td>
                 <td>
                   0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="${project.url}/checkstyle.html#spotifysystem.logic.ApiFunctionHandler.java">spotifysystem/logic/ApiFunctionHandler.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
                 </td>
               </tr>
                           <tr>

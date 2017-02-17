@@ -26,7 +26,6 @@ public class MainLogicTest {
 
     }
 
-    
     @BeforeClass
     public static void setUpClass() {
     }
@@ -64,6 +63,12 @@ public class MainLogicTest {
 
     @Test
     public void logInErrorTest() {
+        MainLogic.logIn("absolutelyfalseusername", new char[]{1, 2, 3});
+        assertTrue(WebSite.getCode() == "");
+    }
+
+    @Test
+    public void playlistUpdateWorks() {
         MainLogic.logIn("absolutelyfalseusername", new char[]{1, 2, 3});
         assertTrue(WebSite.getCode() == "");
     }

@@ -7,3 +7,7 @@
 **Kaikkien käyttäjien toiminnot**: Pikanäppäinten käyttö, asetus, randomaus, spotifyhyn kirjautuminen
 
 ![Alt text](maarittelykaavio.png)
+
+![Alt text](User logs in.png)
+
+![Alt text](User shuffles playlist.png)

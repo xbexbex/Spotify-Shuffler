@@ -2,13 +2,16 @@
 <checkstyle version="6.11.2">
 <file name="C:\Projects\SpotifySysteemi\SpotifySysteemi\src\main\java\spotifysystem\gui\MainGUI.java">
 </file>
-<file name="C:\Projects\SpotifySysteemi\SpotifySysteemi\src\main\java\spotifysystem\logic\AuthHandler.java">
+<file name="C:\Projects\SpotifySysteemi\SpotifySysteemi\src\main\java\spotifysystem\logic\ApiFunctionHandler.java">
+<error line="1" severity="error" message="File length is 282 lines (max allowed is 250)." source="com.puppycrawl.tools.checkstyle.checks.sizes.FileLengthCheck"/>
 </file>
 <file name="C:\Projects\SpotifySysteemi\SpotifySysteemi\src\main\java\spotifysystem\logic\AuthTimer.java">
 </file>
 <file name="C:\Projects\SpotifySysteemi\SpotifySysteemi\src\main\java\spotifysystem\logic\Config.java">
 </file>
 <file name="C:\Projects\SpotifySysteemi\SpotifySysteemi\src\main\java\spotifysystem\logic\MainLogic.java">
+</file>
+<file name="C:\Projects\SpotifySysteemi\SpotifySysteemi\src\main\java\spotifysystem\logic\Playlist.java">
 </file>
 <file name="C:\Projects\SpotifySysteemi\SpotifySysteemi\src\main\java\spotifysystem\logic\WebSite.java">
 </file>

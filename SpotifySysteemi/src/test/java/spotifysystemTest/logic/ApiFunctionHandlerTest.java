@@ -6,7 +6,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import spotifysystem.logic.AuthHandler;
+import spotifysystem.logic.ApiFunctionHandler;
 import static org.junit.Assert.*;
 import org.junit.ClassRule;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
@@ -17,11 +17,11 @@ import spotifysystem.logic.WebSite;
  *
  * @author Owner
  */
-public class AuthHandlerTest {
+public class ApiFunctionHandlerTest {
 
     static String code;
 
-    public AuthHandlerTest() {
+    public ApiFunctionHandlerTest() {
     }
 
 
@@ -45,7 +45,7 @@ public class AuthHandlerTest {
 
     @Test
     public void testWithWrongCode() {
-        int status = AuthHandler.getTokens("1234");
+        int status = ApiFunctionHandler.getTokens("1234");
         assertTrue(status < 2);
     }
 

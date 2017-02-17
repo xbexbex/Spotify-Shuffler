@@ -21,7 +21,7 @@ public class AuthTimer extends Timer {
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                AuthHandler.refresh();
+                ApiFunctionHandler.refresh();
             }
         };
         this.schedule(timerTask, toMS(t));
@@ -38,7 +38,7 @@ public class AuthTimer extends Timer {
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                AuthHandler.refresh();
+                ApiFunctionHandler.refresh();
             }
         };
         this.schedule(timerTask, toMS(t));
