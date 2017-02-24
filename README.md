@@ -16,4 +16,8 @@ The "Create new lists" -checkbox can be selected if you wish to keep the origina
 
 [checkstyle](https://htmlpreview.github.io/?https://github.com/xbexbex/SpotifySysteemi/blob/master/dokumentaatio/checkstyle/site/checkstyle.html)
 
+<<<<<<< HEAD
 [pit-testi](https://htmlpreview.github.io/?https://github.com/xbexbex/SpotifySysteemi/blob/master/dokumentaatio/pit/201702242234/index.html)
+=======
+[pit-testi](https://htmlpreview.github.io/?https://github.com/xbexbex/SpotifySysteemi/blob/master/dokumentaatio/pit/201702172320/index.html)
+>>>>>>> origin/master
