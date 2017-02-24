@@ -73,13 +73,22 @@ public class MainLogic {
 //        conf.init();
 //        conf.printProperties();
 //    }
-
+    
+    /**
+     * Updates the list of playlists and sends it to GUI
+     */
     public static void playlistUpdate() {
         playlists = ApiFunctionHandler.getPlaylists();
         String[] names = getPlaylistNames();
         MainGUI.playlistUpdate(names);
     }
-
+    
+    /**
+     * Shuffles the playlist(s)
+     *
+     * @param i list of selected playlist indices
+     * @param b whether or not old list(s) will be used
+     */
     public static void shuffle(int[] i, boolean b) {
         if (i == null) {
             return;
@@ -110,7 +119,7 @@ public class MainLogic {
         playlistUpdate();
         return playlists;
     }
-
+    
     public static String[] getPlaylistNames() {
         String[] names = new String[playlists.size()];
         int i = 0;

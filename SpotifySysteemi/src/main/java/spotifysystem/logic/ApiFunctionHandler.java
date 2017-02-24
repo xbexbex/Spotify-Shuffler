@@ -6,12 +6,13 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.wrapper.spotify.Api;
 import com.wrapper.spotify.methods.AddTrackToPlaylistRequest;
 import com.wrapper.spotify.methods.PlaylistTracksRequest;
-import com.wrapper.spotify.methods.ReorderPlaylistTracksRequest;
+import com.wrapper.spotify.methods.ReplaceTracksInPlaylistRequest;
 import com.wrapper.spotify.methods.UserPlaylistsRequest;
 import com.wrapper.spotify.models.AuthorizationCodeCredentials;
 import com.wrapper.spotify.models.Page;
 import com.wrapper.spotify.models.RefreshAccessTokenCredentials;
 import com.wrapper.spotify.models.PlaylistTrack;
+import com.wrapper.spotify.models.PlaylistTrackPosition;
 import com.wrapper.spotify.models.SimplePlaylist;
 import com.wrapper.spotify.models.SnapshotResult;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class ApiFunctionHandler {
     private static AuthTimer timer = null;
 
     /**
-     *
+     * Gets authorization tokens from spotify using a code
      * @param s authorization code
      * @return error code, 0 if successfull
      */
@@ -70,7 +71,7 @@ public class ApiFunctionHandler {
     }
 
     /**
-     * Updates the spotify web api accesstoken by using the old access and
+     * Updates the spotify web api accesstoken by using the old access- and refreshtokens
      * refresh tokens
      */
     public static void refresh() {
@@ -82,8 +83,7 @@ public class ApiFunctionHandler {
             public void onSuccess(RefreshAccessTokenCredentials refreshAccessTokenCredentials) {
                 accessToken = refreshAccessTokenCredentials.getAccessToken();
                 status = refreshAccessTokenCredentials.getExpiresIn();
-                MainLogic.print(status + "");
-                MainLogic.print(accessToken);
+                MainLogic.print("Logged in succesfully!");
             }
 
             @Override
@@ -93,7 +93,11 @@ public class ApiFunctionHandler {
 
         });
     }
-
+    
+    /**
+     * Fetches the user's playlists from spotify
+     * @return ArrayList<Playlist>
+     */
     public static ArrayList<Playlist> getPlaylists() {
         api = returnApi(3);
         ArrayList<Playlist> lists = new ArrayList<>();
@@ -108,19 +112,32 @@ public class ApiFunctionHandler {
         }
         return lists;
     }
-
+    
+    /**
+     * Shuffles the tracks in a playlist
+     * @param p playlist to be shuffled
+     * @param b boolean, whether or not a new playlist is to be created
+     * @return error code, 0 if successfull
+     */
     public static int shufflePlaylist(Playlist p, boolean b) {
         api = returnApi(3);
         pass = "";
         status = 0;
         try {
+            final PlaylistTracksRequest request = api.getPlaylistTracks(MainLogic.getUsername(), p.getId()).build();
+            final Page<PlaylistTrack> tracks = request.get();
+            List<PlaylistTrack> plt = tracks.getItems();
+            List<String> pltx = randomize(plt);
             if (b) {
-                final ReorderPlaylistTracksRequest request = api.reorderPlaylistTracks(MainLogic.getUsername(), p.getId()).build();
+                pass = p.getId();
+                List<PlaylistTrackPosition> pltr = new ArrayList();
+                final ReplaceTracksInPlaylistRequest rerequest = api.replaceTracksInPlaylist(MainLogic.getUsername(), pass, pltx).build();
+                try {
+                    rerequest.get();
+                } catch (Exception t) {
+                    MainLogic.print(t.toString());
+                }
             } else {
-                final PlaylistTracksRequest request = api.getPlaylistTracks(MainLogic.getUsername(), p.getId()).build();
-                final Page<PlaylistTrack> tracks = request.get();
-                List<PlaylistTrack> plt = tracks.getItems();
-                List<String> pltx = randomize(plt);
                 String n = getSuitableName(p.getName());
                 MainLogic.print(n);
                 createPlaylist(n);
@@ -128,31 +145,23 @@ public class ApiFunctionHandler {
                 if (pass.equals("")) {
                     return 1;
                 }
-                addTracks(pltx);
+            }
+            final AddTrackToPlaylistRequest arequest = api.addTracksToPlaylist(MainLogic.getUsername(), pass, pltx).position(0).build();
+            try {
+                arequest.get();
+            } catch (Exception t) {
+                MainLogic.print(t.toString());
             }
         } catch (Exception e) {
             return 0;
         }
         return status;
     }
-    
-    private static void addTracks(List<String> pltx) {
-        final SettableFuture<SnapshotResult> playlistr = api.addTracksToPlaylist(clientId, pass, pltx).build().getAsync();
-        Futures.addCallback(playlistr, new FutureCallback<SnapshotResult>() {
-            @Override
-            public void onSuccess(SnapshotResult playlistr) {
-                status = 2;
-            }
 
-            @Override
-            public void onFailure(Throwable throwable) {
-                status = 0;
-            }
-
-        });
-        
-    }
-    
+    /**
+     * Creates a new playlist for the user
+     * @param String name
+     */
     private static void createPlaylist(String name) {
         final SettableFuture<com.wrapper.spotify.models.Playlist> playlistr = api.createPlaylist(MainLogic.getUsername(), name).publicAccess(true).build().getAsync();
         Futures.addCallback(playlistr, new FutureCallback<com.wrapper.spotify.models.Playlist>() {
@@ -167,7 +176,12 @@ public class ApiFunctionHandler {
 
         });
     }
-
+    
+     /**
+     * Finds a suitable non-duplicate name for the new playlist by checking the list of playlists
+     * @param n String original playlist's name
+     * @return suitable name
+     */
     private static String getSuitableName(String n) {
         String[] nwords = n.split(" ");
         String[] names = MainLogic.getPlaylistNames();
@@ -222,7 +236,12 @@ public class ApiFunctionHandler {
         return n + "(Shuffled " + st + ")";
 
     }
-
+    
+     /**
+     * Randomizes the order of a list of tracks and prepares it for further use
+     * @param pltz list to be shuffled
+     * @return shuffled list
+     */
     private static List<String> randomize(List<PlaylistTrack> pltz) {
         PlaylistTrack[] plt = new PlaylistTrack[pltz.size()];
         int j = 0;
@@ -247,6 +266,7 @@ public class ApiFunctionHandler {
     /**
      * Builds and api with the static class parameters
      *
+     * @param type
      * @return built api
      */
     public static Api returnApi(int type) {
@@ -271,10 +291,18 @@ public class ApiFunctionHandler {
         return null;
     }
 
+    /**
+     * Manually set access token
+     * @param t
+     */
     public static void setAToken(String t) {
         accessToken = t;
     }
 
+    /**
+     * Manually set refresh token
+     * @param t
+     */
     public static void setRToken(String t) {
         refreshToken = t;
     }

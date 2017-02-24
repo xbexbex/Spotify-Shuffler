@@ -19,6 +19,7 @@ import spotifysystem.gui.MainGUI;
 
 /**
  * Handles logging into spotify with a browser
+ *
  * @author xbexbex
  */
 public class WebSite {
@@ -30,6 +31,7 @@ public class WebSite {
 
     /**
      * Main method for logging into spotify
+     *
      * @param un
      * @param pw
      * @see checkState()
@@ -81,6 +83,10 @@ public class WebSite {
         }
     }
 
+    /**
+     * Checks the current state of the logging in -process and returns the
+     * corresponding integer
+     */
     private static int checkState() {
         try {
             if (!(code.equals(""))) {
@@ -116,17 +122,26 @@ public class WebSite {
         return 0;
     }
 
+    /**
+     * The first step in the login-process, opens the spotify website.
+     */
     private static void openPage() throws Exception {
         page = (HtmlPage) webClient.getPage(AUTHPAGE);
         webClient.waitForBackgroundJavaScript(50000);
     }
 
+    /**
+     * The second step in the login-process, clicks the log in button
+     */
     private static void connectToSpotify() throws Exception {
         HtmlAnchor a = (HtmlAnchor) page.getAnchorByText("Log in to Spotify");
         page = a.click();
         webClient.waitForBackgroundJavaScript(50000);
     }
 
+    /**
+     * The third step in the login-process, inputs the user data and logs in
+     */
     private static void logInToSpotify(String un, String pw) throws Exception {
         HtmlInput username = page.getHtmlElementById("login-username");
         username.setValueAttribute(un);
@@ -138,12 +153,18 @@ public class WebSite {
         webClient.waitForBackgroundJavaScript(50000);
     }
 
+    /**
+     * Clicks the authorize button
+     */
     private static void authorize() throws Exception {
         HtmlButton b = page.getFirstByXPath("//button[text()='Okay']");
         page = b.click();
         webClient.waitForBackgroundJavaScript(50000);
     }
 
+    /**
+     * Sets up the needed settings for the webclient
+     */
     private static void setUp() {
         webClient = new WebClient(BrowserVersion.CHROME);
         webClient.getOptions().setRedirectEnabled(true);

@@ -12,11 +12,6 @@ public class MainGUI extends javax.swing.JFrame {
     public static javax.swing.JList<String> list;
 
     public MainGUI() {
-        try {
-            UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-        } catch (Exception e) {
-
-        }
         initComponents();
         msgArea = text1;
         logInPanel = jPanel1;
@@ -60,6 +55,11 @@ public class MainGUI extends javax.swing.JFrame {
         username.setName("username"); // NOI18N
 
         password.setText("1234");
+        password.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordActionPerformed(evt);
+            }
+        });
 
         login.setText("Log in to Spotify");
         login.addActionListener(new java.awt.event.ActionListener() {
@@ -78,7 +78,7 @@ public class MainGUI extends javax.swing.JFrame {
             }
         });
 
-        shuffleExisting.setText("Use Existing Lists");
+        shuffleExisting.setText("Create new lists");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -134,6 +134,8 @@ public class MainGUI extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Playlists", jPanel1);
 
+        jPanel2.setEnabled(false);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -145,7 +147,7 @@ public class MainGUI extends javax.swing.JFrame {
             .addGap(0, 160, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("Hotkeys", jPanel2);
+        jTabbedPane1.addTab("Settings", jPanel2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -164,7 +166,7 @@ public class MainGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scroll1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(scroll1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -176,8 +178,12 @@ public class MainGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_loginActionPerformed
 
     private void shuffleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shuffleActionPerformed
-        MainLogic.shuffle(list.getSelectedIndices(), shuffleExisting.isSelected());
+        MainLogic.shuffle(list.getSelectedIndices(), !shuffleExisting.isSelected());
     }//GEN-LAST:event_shuffleActionPerformed
+
+    private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_passwordActionPerformed
 
     public static void printMessage(String m) {
         if (returnLog().equals("")) {

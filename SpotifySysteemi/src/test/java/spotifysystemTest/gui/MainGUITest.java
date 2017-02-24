@@ -8,9 +8,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import spotifysystem.gui.MainGUI;
 import static org.junit.Assert.*;
-import org.junit.ClassRule;
-import org.junit.contrib.java.lang.system.ExpectedSystemExit;
-import spotifysystem.logic.MainLogic;
 
 
 public class MainGUITest {

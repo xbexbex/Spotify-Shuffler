@@ -5,7 +5,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Timer running for AuthHandler
+ * Timer running for AuthHandler, so that the user doesn't have to relogin after the period.
  * @author xbexbex
  */
 public class AuthTimer extends Timer {
