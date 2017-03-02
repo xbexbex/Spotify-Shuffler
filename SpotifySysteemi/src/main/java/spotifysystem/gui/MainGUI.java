@@ -8,6 +8,7 @@ public class MainGUI extends javax.swing.JFrame {
     public static javax.swing.JLabel msgArea;
     public static javax.swing.JPanel logInPanel;
     public static javax.swing.JPanel playlistPanel;
+    public static javax.swing.JPanel hidden;
     public static javax.swing.JList<String> list;
     public static javax.swing.JTabbedPane tab;
 
@@ -18,6 +19,8 @@ public class MainGUI extends javax.swing.JFrame {
         playlistPanel = jPanel4;
         list = jList1;
         tab = jTabbedPane1;
+        hidden = jPanel3;
+        hidden.setVisible(true);
         login.setBounds(0, 0, 1, tab.getHeight());
 
         playListTab(false);
@@ -40,6 +43,7 @@ public class MainGUI extends javax.swing.JFrame {
         refresh = new javax.swing.JButton();
         delete = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
         text1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -160,15 +164,34 @@ public class MainGUI extends javax.swing.JFrame {
 
         jPanel2.setEnabled(false);
 
+        jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 312, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 338, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 160, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(29, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24))
         );
 
         jTabbedPane1.addTab("Settings", jPanel2);
@@ -259,12 +282,9 @@ public class MainGUI extends javax.swing.JFrame {
 //        } else {
 //            msgArea.setText(msgArea.getText() + System.getProperty("line.separator") + m);
 //        }
-//        msgArea.setText(" ");
-//        msgArea.setVisible(false);
-//        msgArea.update(msgArea.getGraphics());
+        hidden.update(msgArea.getGraphics());
         msgArea.setText(m);
-//        msgArea.setVisible(true);
-//        msgArea.update(msgArea.getGraphics());
+        msgArea.update(msgArea.getGraphics());
     }
 
     public static String returnLog() {
@@ -324,6 +344,7 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
