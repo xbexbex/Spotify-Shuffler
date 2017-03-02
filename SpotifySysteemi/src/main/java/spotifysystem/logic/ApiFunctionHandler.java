@@ -146,7 +146,7 @@ public class ApiFunctionHandler {
                 try {
                     rerequest.get();
                 } catch (Exception t) {
-                    return 2;
+                    return 1;
                 }
             } else {
                 String n = getSuitableName(p.getName());
@@ -161,7 +161,7 @@ public class ApiFunctionHandler {
             try {
                 arequest.get();
             } catch (Exception t) {
-                return 2;
+                return 1;
             }
         } catch (Exception e) {
             return 0;

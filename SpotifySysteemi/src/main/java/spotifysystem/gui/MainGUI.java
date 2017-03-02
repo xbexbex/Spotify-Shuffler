@@ -9,6 +9,7 @@ public class MainGUI extends javax.swing.JFrame {
     public static javax.swing.JPanel logInPanel;
     public static javax.swing.JPanel playlistPanel;
     public static javax.swing.JList<String> list;
+    public static javax.swing.JTabbedPane tab;
 
     public MainGUI() {
         initComponents();
@@ -16,7 +17,9 @@ public class MainGUI extends javax.swing.JFrame {
         logInPanel = jPanel1;
         playlistPanel = jPanel4;
         list = jList1;
-
+        tab = jTabbedPane1;
+        login.setBounds(0, 0, 1, tab.getHeight());
+        
         playListTab(false);
     }
 
@@ -97,8 +100,8 @@ public class MainGUI extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(shuffleExisting, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -129,15 +132,13 @@ public class MainGUI extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(171, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(password)
                     .addComponent(username)
                     .addComponent(login, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
                 .addGap(37, 37, 37))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -160,11 +161,11 @@ public class MainGUI extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 325, Short.MAX_VALUE)
+            .addGap(0, 338, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 357, Short.MAX_VALUE)
+            .addGap(0, 160, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Settings", jPanel2);
@@ -178,9 +179,11 @@ public class MainGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(text1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(text1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jTabbedPane1))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -195,13 +198,26 @@ public class MainGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
+    private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
+        int[] indices = list.getSelectedIndices();
+        if (indices.length == 0) {
+            printMessage("No playlist selected");
+            return;
+        }
+        disableButtons(true);
+        cursor(true);
+        MainLogic.delete(indices, !shuffleExisting.isSelected());
+        cursor(false);
+        disableButtons(false);
+    }//GEN-LAST:event_deleteActionPerformed
+
+    private void refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshActionPerformed
         cursor(true);
         disableButtons(true);
-        MainLogic.logIn(username.getText(), password.getPassword());
-        disableButtons(false);
+        MainLogic.playlistUpdate(true);
         cursor(false);
-    }//GEN-LAST:event_loginActionPerformed
+        disableButtons(false);
+    }//GEN-LAST:event_refreshActionPerformed
 
     private void shuffleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shuffleActionPerformed
         int[] indices = list.getSelectedIndices();
@@ -217,30 +233,17 @@ public class MainGUI extends javax.swing.JFrame {
         cursor(false);
     }//GEN-LAST:event_shuffleActionPerformed
 
+    private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
+        cursor(true);
+        disableButtons(true);
+        MainLogic.logIn(username.getText(), password.getPassword());
+        disableButtons(false);
+        cursor(false);
+    }//GEN-LAST:event_loginActionPerformed
+
     private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_passwordActionPerformed
-
-    private void refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshActionPerformed
-        cursor(true);
-        disableButtons(true);
-        MainLogic.playlistUpdate(true);
-        cursor(false);
-        disableButtons(false);
-    }//GEN-LAST:event_refreshActionPerformed
-
-    private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
-        int[] indices = list.getSelectedIndices();
-        if (indices.length == 0) {
-            printMessage("No playlist selected");
-            return;
-        }
-        disableButtons(true);
-        cursor(true);
-        MainLogic.delete(indices, !shuffleExisting.isSelected());
-        cursor(false);
-        disableButtons(false);
-    }//GEN-LAST:event_deleteActionPerformed
 
     public static void printMessage(String m) {
 //        if (returnLog().equals("")) {
@@ -280,10 +283,10 @@ public class MainGUI extends javax.swing.JFrame {
             playlistPanel.setEnabled(true);
             playlistPanel.setVisible(true);
         } else {
-            playlistPanel.setEnabled(false);
-            playlistPanel.setVisible(false);
             logInPanel.setEnabled(true);
             logInPanel.setVisible(true);
+            playlistPanel.setEnabled(false);
+            playlistPanel.setVisible(false);
         }
     }
 
@@ -294,7 +297,7 @@ public class MainGUI extends javax.swing.JFrame {
             setCursor(Cursor.getDefaultCursor());
         }
     }
-    
+
     private void disableButtons(boolean b) {
         refresh.setEnabled(!b);
         shuffle.setEnabled(!b);

@@ -95,8 +95,32 @@ public class MainLogic {
         if (i == null) {
             return;
         }
+        ArrayList<Integer> s = new ArrayList();
         for (int j = 0; j < i.length; j++) {
-            ApiFunctionHandler.shufflePlaylist(playlists.get(i[j]), b);
+            s.add(ApiFunctionHandler.shufflePlaylist(playlists.get(i[j]), b));
+        }
+        if (s.size() == 1) {
+            if (s.get(0) == 0) {
+                print("Playlist shuffled");
+            } else if (s.get(0) == 2) {
+                print("Playlist is empty");
+            } else {
+                print("Unable to shuffle playlist");
+            }
+        } else {
+            int x = 0;
+            for (int z : s) {
+                if (z == 0) {
+                    x++;
+                }
+            }
+            if (x == 0) {
+                print("Unable to shuffle playlists");
+            } else if (x == s.size()) {
+                print("All " + s.size() + " playlists shuffled");
+            } else {
+                print(x + " of " + s.size() + " playlists shuffled succesfully");
+            }
         }
         playlistUpdate(false);
     }
@@ -105,8 +129,30 @@ public class MainLogic {
         if (i == null) {
             return;
         }
+        ArrayList<Integer> s = new ArrayList();
         for (int j = 0; j < i.length; j++) {
-            ApiFunctionHandler.removePlaylist(playlists.get(i[j]).getId());
+            s.add(ApiFunctionHandler.removePlaylist(playlists.get(i[j]).getId()));
+        }
+        if (s.size() == 1) {
+            if (s.get(0) == 0) {
+                print("Playlist deleted");
+            } else {
+                print("Unable to delete playlist");
+            }
+        } else {
+            int x = 0;
+            for (int z : s) {
+                if (z == 0) {
+                    x++;
+                }
+            }
+            if (x == 0) {
+                print("Unable to delete playlists");
+            } else if (x == s.size()) {
+                print("All " + s.size() + " playlists deleted");
+            } else {
+                print(x + " of " + s.size() + " playlists deleted succesfully");
+            }
         }
         playlistUpdate(false);
     }
