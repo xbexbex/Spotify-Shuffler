@@ -44,12 +44,11 @@ public class MainLogic {
     public static void logIn() {
         String msg = WebSite.logIn(un, pw);
         if (msg.equals("")) {
-            print(WebSite.getCode());
             int status = ApiFunctionHandler.getTokens(WebSite.getCode());
             if (status > 1) {
                 MainGUI.playListTab(true);
                 ApiFunctionHandler.refresh();
-                playlistUpdate();
+                playlistUpdate(false);
             }
         } else {
             print(msg);
@@ -77,10 +76,13 @@ public class MainLogic {
     /**
      * Updates the list of playlists and sends it to GUI
      */
-    public static void playlistUpdate() {
+    public static void playlistUpdate(boolean b) {
         playlists = ApiFunctionHandler.getPlaylists();
         String[] names = getPlaylistNames();
         MainGUI.playlistUpdate(names);
+        if (b) {
+            MainGUI.printMessage("List updated");
+        }
     }
     
     /**
@@ -96,7 +98,17 @@ public class MainLogic {
         for (int j = 0; j < i.length; j++) {
             ApiFunctionHandler.shufflePlaylist(playlists.get(i[j]), b);
         }
-        playlistUpdate();
+        playlistUpdate(false);
+    }
+    
+    public static void delete(int[] i, boolean b) {
+        if (i == null) {
+            return;
+        }
+        for (int j = 0; j < i.length; j++) {
+            ApiFunctionHandler.removePlaylist(playlists.get(i[j]).getId());
+        }
+        playlistUpdate(false);
     }
 
     public static String getUsername() {
@@ -116,7 +128,7 @@ public class MainLogic {
     }
 
     public static ArrayList<Playlist> getPlaylists() {
-        playlistUpdate();
+        playlistUpdate(false);
         return playlists;
     }
     

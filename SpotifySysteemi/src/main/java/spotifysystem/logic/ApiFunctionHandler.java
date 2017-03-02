@@ -14,7 +14,12 @@ import com.wrapper.spotify.models.RefreshAccessTokenCredentials;
 import com.wrapper.spotify.models.PlaylistTrack;
 import com.wrapper.spotify.models.PlaylistTrackPosition;
 import com.wrapper.spotify.models.SimplePlaylist;
-import com.wrapper.spotify.models.SnapshotResult;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +43,7 @@ public class ApiFunctionHandler {
 
     /**
      * Gets authorization tokens from spotify using a code
+     *
      * @param s authorization code
      * @return error code, 0 if successfull
      */
@@ -63,7 +69,7 @@ public class ApiFunctionHandler {
             @Override
             public void onFailure(Throwable throwable) {
                 status = 1;
-                MainLogic.print(throwable.getMessage());
+                MainLogic.print("Something went wrong");
             }
 
         });
@@ -71,8 +77,8 @@ public class ApiFunctionHandler {
     }
 
     /**
-     * Updates the spotify web api accesstoken by using the old access- and refreshtokens
-     * refresh tokens
+     * Updates the spotify web api accesstoken by using the old access- and
+     * refreshtokens refresh tokens
      */
     public static void refresh() {
         api = returnApi(2);
@@ -93,9 +99,10 @@ public class ApiFunctionHandler {
 
         });
     }
-    
+
     /**
      * Fetches the user's playlists from spotify
+     *
      * @return ArrayList<Playlist>
      */
     public static ArrayList<Playlist> getPlaylists() {
@@ -112,9 +119,10 @@ public class ApiFunctionHandler {
         }
         return lists;
     }
-    
+
     /**
      * Shuffles the tracks in a playlist
+     *
      * @param p playlist to be shuffled
      * @param b boolean, whether or not a new playlist is to be created
      * @return error code, 0 if successfull
@@ -127,6 +135,9 @@ public class ApiFunctionHandler {
             final PlaylistTracksRequest request = api.getPlaylistTracks(MainLogic.getUsername(), p.getId()).build();
             final Page<PlaylistTrack> tracks = request.get();
             List<PlaylistTrack> plt = tracks.getItems();
+            if (plt.isEmpty()) {
+                return 2;
+            }
             List<String> pltx = randomize(plt);
             if (b) {
                 pass = p.getId();
@@ -135,7 +146,7 @@ public class ApiFunctionHandler {
                 try {
                     rerequest.get();
                 } catch (Exception t) {
-                    MainLogic.print(t.toString());
+                    return 2;
                 }
             } else {
                 String n = getSuitableName(p.getName());
@@ -150,7 +161,7 @@ public class ApiFunctionHandler {
             try {
                 arequest.get();
             } catch (Exception t) {
-                MainLogic.print(t.toString());
+                return 2;
             }
         } catch (Exception e) {
             return 0;
@@ -160,6 +171,7 @@ public class ApiFunctionHandler {
 
     /**
      * Creates a new playlist for the user
+     *
      * @param String name
      */
     private static void createPlaylist(String name) {
@@ -176,9 +188,11 @@ public class ApiFunctionHandler {
 
         });
     }
-    
-     /**
-     * Finds a suitable non-duplicate name for the new playlist by checking the list of playlists
+
+    /**
+     * Finds a suitable non-duplicate name for the new playlist by checking the
+     * list of playlists
+     *
      * @param n String original playlist's name
      * @return suitable name
      */
@@ -236,9 +250,10 @@ public class ApiFunctionHandler {
         return n + "(Shuffled " + st + ")";
 
     }
-    
-     /**
+
+    /**
      * Randomizes the order of a list of tracks and prepares it for further use
+     *
      * @param pltz list to be shuffled
      * @return shuffled list
      */
@@ -291,8 +306,42 @@ public class ApiFunctionHandler {
         return null;
     }
 
+    public static int removePlaylist(String plId) {
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL("https://api.spotify.com/v1/users/" + MainLogic.getUsername() + "/playlists/" + plId + "/followers");
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("DELETE");
+            connection.setRequestProperty("Authorization", 
+                    "Bearer " + accessToken);
+            connection.setUseCaches(false);
+            connection.setDoOutput(true);
+            DataOutputStream wr = new DataOutputStream(
+                    connection.getOutputStream());
+            wr.close();
+
+            InputStream is = connection.getInputStream();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
+            String line;
+            while ((line = rd.readLine()) != null) {
+                response.append(line);
+                response.append('\r');
+            }
+            rd.close();
+            return 0;
+        } catch (Exception e) {
+            return 1;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
     /**
      * Manually set access token
+     *
      * @param t
      */
     public static void setAToken(String t) {
@@ -301,6 +350,7 @@ public class ApiFunctionHandler {
 
     /**
      * Manually set refresh token
+     *
      * @param t
      */
     public static void setRToken(String t) {
