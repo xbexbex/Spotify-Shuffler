@@ -42,6 +42,7 @@ public class MainLogic {
      * Logs in to spotify with previously saved username and password
      */
     public static void logIn() {
+        print("Logging in...");
         String msg = WebSite.logIn(un, pw);
         if (msg.equals("")) {
             int status = ApiFunctionHandler.getTokens(WebSite.getCode());
@@ -97,7 +98,12 @@ public class MainLogic {
         }
         ArrayList<Integer> s = new ArrayList();
         for (int j = 0; j < i.length; j++) {
-            s.add(ApiFunctionHandler.shufflePlaylist(playlists.get(i[j]), b));
+            int d = ApiFunctionHandler.shufflePlaylist(playlists.get(i[j]), b);
+//            if (d > 0) {
+//                MainLogic.print(d + "");
+//                return;
+//            }
+            s.add(d);
         }
         if (s.size() == 1) {
             if (s.get(0) == 0) {

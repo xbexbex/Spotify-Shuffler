@@ -131,18 +131,40 @@ public class ApiFunctionHandler {
         api = returnApi(3);
         pass = "";
         status = 0;
+        int error = 0;
         try {
-            final PlaylistTracksRequest request = api.getPlaylistTracks(MainLogic.getUsername(), p.getId()).build();
-            final Page<PlaylistTrack> tracks = request.get();
+            PlaylistTracksRequest request = api.getPlaylistTracks(MainLogic.getUsername(), p.getId()).build();
+            Page<PlaylistTrack> tracks = request.get();
             List<PlaylistTrack> plt = tracks.getItems();
             if (plt.isEmpty()) {
                 return 2;
             }
+            int of = 100;
+            while (true) {
+                try {
+                    request = api.getPlaylistTracks(MainLogic.getUsername(), p.getId()).offset(of).build();
+                    tracks = request.get();
+                    List<PlaylistTrack> pltt = tracks.getItems();
+                    if (pltt.isEmpty()) {
+                        break;
+                    } else {
+                        for (PlaylistTrack plst : pltt) {
+                            plt.add(plst);
+                        }
+                    }
+                    of += 100;
+                } catch (Exception t) {
+                    break;
+                }
+            }
+//            if (plt.size() != 0) {
+//                return (plt.size());
+//            }
             List<String> pltx = randomize(plt);
+            List<String> clr = new ArrayList();
             if (b) {
                 pass = p.getId();
-                List<PlaylistTrackPosition> pltr = new ArrayList();
-                final ReplaceTracksInPlaylistRequest rerequest = api.replaceTracksInPlaylist(MainLogic.getUsername(), pass, pltx).build();
+                ReplaceTracksInPlaylistRequest rerequest = api.replaceTracksInPlaylist(MainLogic.getUsername(), pass, clr).build();
                 try {
                     rerequest.get();
                 } catch (Exception t) {
@@ -150,23 +172,40 @@ public class ApiFunctionHandler {
                 }
             } else {
                 String n = getSuitableName(p.getName());
-                MainLogic.print(n);
                 createPlaylist(n);
-                ArrayList<Playlist> playlists = MainLogic.getPlaylists();
                 if (pass.equals("")) {
                     return 1;
                 }
             }
-            final AddTrackToPlaylistRequest arequest = api.addTracksToPlaylist(MainLogic.getUsername(), pass, pltx).position(0).build();
-            try {
-                arequest.get();
-            } catch (Exception t) {
-                return 1;
+            List<String> pltr = new ArrayList();
+            while (true) {
+                int k = pltx.size();
+                if (k > 100) {
+                    for (int i = k - 1; i >= k - 100; i--) {
+                        pltr.add(pltx.get(i));
+                        pltx.remove(i);
+                    }
+                    AddTrackToPlaylistRequest arequest = api.addTracksToPlaylist(MainLogic.getUsername(), pass, pltr).position(0).build();
+                    try {
+                        arequest.get();
+                    } catch (Exception t) {
+                        error--;
+                    }
+                } else {
+                    AddTrackToPlaylistRequest arequest = api.addTracksToPlaylist(MainLogic.getUsername(), pass, pltx).position(0).build();
+                    try {
+                        arequest.get();
+                    } catch (Exception t) {
+                        return error--;
+                    }
+                    break;
+                }
+                pltr.clear();
             }
         } catch (Exception e) {
-            return 0;
+            return 1;
         }
-        return status;
+        return error;
     }
 
     /**
@@ -312,7 +351,7 @@ public class ApiFunctionHandler {
             URL url = new URL("https://api.spotify.com/v1/users/" + MainLogic.getUsername() + "/playlists/" + plId + "/followers");
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("DELETE");
-            connection.setRequestProperty("Authorization", 
+            connection.setRequestProperty("Authorization",
                     "Bearer " + accessToken);
             connection.setUseCaches(false);
             connection.setDoOutput(true);

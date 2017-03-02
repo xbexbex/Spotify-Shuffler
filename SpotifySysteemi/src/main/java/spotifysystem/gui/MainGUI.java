@@ -19,7 +19,7 @@ public class MainGUI extends javax.swing.JFrame {
         list = jList1;
         tab = jTabbedPane1;
         login.setBounds(0, 0, 1, tab.getHeight());
-        
+
         playListTab(false);
     }
 
@@ -51,10 +51,13 @@ public class MainGUI extends javax.swing.JFrame {
         jTabbedPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jTabbedPane1.setToolTipText("");
 
-        username.setText("shufflertest");
         username.setName("username"); // NOI18N
+        username.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usernameActionPerformed(evt);
+            }
+        });
 
-        password.setText("1234");
         password.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 passwordActionPerformed(evt);
@@ -171,6 +174,7 @@ public class MainGUI extends javax.swing.JFrame {
         jTabbedPane1.addTab("Settings", jPanel2);
 
         text1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        text1.setText("Log in to shuffle your playlists");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -179,10 +183,8 @@ public class MainGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(text1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jTabbedPane1))
+                    .addComponent(jTabbedPane1)
+                    .addComponent(text1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -204,6 +206,7 @@ public class MainGUI extends javax.swing.JFrame {
             printMessage("No playlist selected");
             return;
         }
+        printMessage("Deleting...");
         disableButtons(true);
         cursor(true);
         MainLogic.delete(indices, !shuffleExisting.isSelected());
@@ -225,6 +228,7 @@ public class MainGUI extends javax.swing.JFrame {
             printMessage("No playlist selected");
             return;
         }
+        printMessage("Shuffling...");
         cursor(true);
         disableButtons(true);
         MainLogic.shuffle(indices, !shuffleExisting.isSelected());
@@ -245,13 +249,22 @@ public class MainGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_passwordActionPerformed
 
+    private void usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_usernameActionPerformed
+
     public static void printMessage(String m) {
 //        if (returnLog().equals("")) {
 //            msgArea.setText(m);
 //        } else {
 //            msgArea.setText(msgArea.getText() + System.getProperty("line.separator") + m);
 //        }
+//        msgArea.setText(" ");
+//        msgArea.setVisible(false);
+//        msgArea.update(msgArea.getGraphics());
         msgArea.setText(m);
+//        msgArea.setVisible(true);
+//        msgArea.update(msgArea.getGraphics());
     }
 
     public static String returnLog() {
