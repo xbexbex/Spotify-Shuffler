@@ -13,5 +13,5 @@ sekoittaa soittolista. Tämän tehtävän onnistuminen on loppujen lopuksi toden
 **Bugit**: 
 * Tiettyjä kappaleita ei voi tällä hetkellä poistaa, eikä paikallisia kappaleita voi lisätät soittolistoihin. Tästä johtuen on mahdotonta sekoittaa tai luoda listoja, joissa on paikallisia kappaleita.
 * Viestipalkki näyttää virheitä välillä, johtuen siitä että Swing ei päivity kunnolla kun ohjelma suorittaa jotain tehtävää.
-* Useita soittolistoja kerralla luodessa joskus tulee samannimisiä listoja. Nimenetsimis algoritmi ei toimi oikein, enkä ole vielä korjannut sitä. Ei vaikuta funktionalisuuteen, sillä Spotify tunnistaa listat niiden ID:n perusteella.
+* Useita soittolistoja kerralla luodessa joskus tulee samannimisiä listoja. Nimenetsimisalgoritmi ei toimi oikein, enkä ole vielä korjannut sitä. Ei vaikuta funktionalisuuteen, sillä Spotify tunnistaa listat niiden ID:n perusteella.
 
