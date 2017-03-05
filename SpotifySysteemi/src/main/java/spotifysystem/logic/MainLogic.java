@@ -42,6 +42,12 @@ public class MainLogic {
      * Logs in to spotify with previously saved username and password
      */
     public static void logIn() {
+        if (pw.equals("") || un.equals("")) {
+            pw = "";
+            un = "";
+            print("Invalid credentials");
+            return;
+        }
         print("Logging in...");
         String msg = WebSite.logIn(un, pw);
         pw = "";

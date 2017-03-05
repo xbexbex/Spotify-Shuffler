@@ -14,6 +14,7 @@ public class MainGUI extends javax.swing.JFrame {
     public static javax.swing.JPanel hidden;
     public static javax.swing.JList<String> list;
     public static javax.swing.JTabbedPane tab;
+    public static javax.swing.JPasswordField pw;
 
     /**
      * Handless GUI-related tasks
@@ -30,6 +31,7 @@ public class MainGUI extends javax.swing.JFrame {
         list = jList1;
         tab = jTabbedPane1;
         hidden = jPanel3;
+        pw = password;
         hidden.setVisible(true);
         login.setBounds(0, 0, 1, tab.getHeight());
 
@@ -255,7 +257,7 @@ public class MainGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTabbedPane1)
-                    .addComponent(text1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(text1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -265,7 +267,7 @@ public class MainGUI extends javax.swing.JFrame {
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(text1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2))
+                .addGap(3, 3, 3))
         );
 
         pack();
@@ -348,6 +350,7 @@ public class MainGUI extends javax.swing.JFrame {
         usrArea.setText(usr);
         logOut.setEnabled(!b);
         tab.setSelectedIndex(0);
+        pw.setText("");
     }
 
     /**
