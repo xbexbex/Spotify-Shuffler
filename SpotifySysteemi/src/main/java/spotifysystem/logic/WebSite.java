@@ -5,17 +5,16 @@ import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
-import com.gargoylesoftware.htmlunit.WebResponseData;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSpan;
-import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
-import org.apache.http.conn.HttpHostConnectException;
-import spotifysystem.gui.MainGUI;
 
 /**
  * Handles logging into spotify with a browser
@@ -48,36 +47,34 @@ public class WebSite {
                 int state = checkState();
                 if (state == 1) {
                     connectToSpotify();
-                    i += 2;
+                    i += 1;
                 } else if (state == 2) {
-                    i += 2;
+                    i += 1;
                     logInToSpotify(un, pw);
                 } else if (state == 3) {
-                    i += 2;
+                    i += 0;
                     authorize();
                 } else if (state == 4) {
                     openPage();
-                    i += 3;
+                    i += 1;
                 } else if (state == 6) {
-                    webClient.close();
                     return "Incorrect username or password";
                 } else if (state == 7) {
                     openPage();
-                    i += 2;
+                    i += 1;
                 } else if (state == 5) {
                     break;
                 }
             }
-            webClient.close();
             if (code.equals("")) {
                 return "Unable to connect to Spotify. Try again later.";
             }
             return "";
         } catch (Exception e) {
-            webClient.close();
             if (code.equals("")) {
                 return "Something went wrong. Try again later.";
             } else {
+                webClient.close();
                 return "";
             }
         }
@@ -90,6 +87,11 @@ public class WebSite {
     private static int checkState() {
         try {
             if (!(code.equals(""))) {
+                return 5;
+            }
+            String url = page.getUrl().toString();
+            if (url.contains("callback?code=")) {
+                code = url.substring(url.indexOf("?") + 1, url.indexOf("&"));
                 return 5;
             }
             HtmlSpan s = page.getFirstByXPath("//span[text()='Incorrect username or password.']");
@@ -157,6 +159,7 @@ public class WebSite {
      * Clicks the authorize button
      */
     private static void authorize() throws Exception {
+        webClient.getOptions().setRedirectEnabled(true);
         HtmlButton b = page.getFirstByXPath("//button[text()='Okay']");
         page = b.click();
         webClient.waitForBackgroundJavaScript(50000);
@@ -166,6 +169,8 @@ public class WebSite {
      * Sets up the needed settings for the webclient
      */
     private static void setUp() {
+        page = null;
+        webClient = null;
         webClient = new WebClient(BrowserVersion.CHROME);
         webClient.getOptions().setRedirectEnabled(true);
         webClient.getOptions().setCssEnabled(true);
@@ -195,6 +200,11 @@ public class WebSite {
         };
     }
 
+    /**
+     * Returns the current login code
+     *
+     * @return
+     */
     public static String getCode() {
         return code;
     }

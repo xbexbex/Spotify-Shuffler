@@ -37,6 +37,8 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.0.2</version>
         <configuration>
+          <shadedArtifactAttached>true</shadedArtifactAttached>
+          <shadedClassifierName>shuffler</shadedClassifierName>
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>

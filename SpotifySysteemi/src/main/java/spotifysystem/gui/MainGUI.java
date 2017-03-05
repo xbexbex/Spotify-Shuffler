@@ -6,16 +6,26 @@ import spotifysystem.logic.MainLogic;
 public class MainGUI extends javax.swing.JFrame {
 
     public static javax.swing.JLabel msgArea;
+    public static javax.swing.JLabel usrArea;
+    public static javax.swing.JButton logOut;
+    public static javax.swing.JButton logIn;
     public static javax.swing.JPanel logInPanel;
     public static javax.swing.JPanel playlistPanel;
     public static javax.swing.JPanel hidden;
     public static javax.swing.JList<String> list;
     public static javax.swing.JTabbedPane tab;
 
+    /**
+     * Handless GUI-related tasks
+     */
     public MainGUI() {
         initComponents();
         msgArea = text1;
+        usrArea = jLabel1;
+        logOut = jButton1;
+        logIn = login;
         logInPanel = jPanel1;
+        playlistPanel = jPanel4;
         playlistPanel = jPanel4;
         list = jList1;
         tab = jTabbedPane1;
@@ -44,6 +54,8 @@ public class MainGUI extends javax.swing.JFrame {
         delete = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         text1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -165,39 +177,61 @@ public class MainGUI extends javax.swing.JFrame {
         jPanel2.setEnabled(false);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        jPanel3.setEnabled(false);
+        jPanel3.setFocusable(false);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 312, Short.MAX_VALUE)
+            .addGap(0, 336, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGap(0, 30, Short.MAX_VALUE)
         );
+
+        jButton1.setText("Log out");
+        jButton1.setEnabled(false);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Not logged in");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(121, 121, 121))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(34, 34, 34))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24))
+                .addGap(0, 45, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(33, 33, 33)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jTabbedPane1.addTab("Settings", jPanel2);
 
         text1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        text1.setText("Log in to shuffle your playlists");
+        text1.setText("Log in with your Spotify credentials to shuffle your playlists");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -217,7 +251,7 @@ public class MainGUI extends javax.swing.JFrame {
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(text1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(2, 2, 2))
         );
 
         pack();
@@ -232,7 +266,7 @@ public class MainGUI extends javax.swing.JFrame {
         printMessage("Deleting...");
         disableButtons(true);
         cursor(true);
-        MainLogic.delete(indices, !shuffleExisting.isSelected());
+        MainLogic.delete(indices);
         cursor(false);
         disableButtons(false);
     }//GEN-LAST:event_deleteActionPerformed
@@ -276,6 +310,15 @@ public class MainGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_usernameActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        MainLogic.logOut();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    /**
+     * Prints a message for the user to see
+     *
+     * @param m
+     */
     public static void printMessage(String m) {
 //        if (returnLog().equals("")) {
 //            msgArea.setText(m);
@@ -287,15 +330,34 @@ public class MainGUI extends javax.swing.JFrame {
         msgArea.update(msgArea.getGraphics());
     }
 
+    public static void usrPrint(String usr, boolean b) {
+        usrArea.setText(usr);
+        logOut.setEnabled(!b);
+        tab.setSelectedIndex(0);
+    }
+
+    /**
+     * Used for debugging
+     *
+     * @return
+     */
     public static String returnLog() {
         return msgArea.getText();
     }
 
+    /**
+     * Used for debugging
+     *
+     * @return
+     */
     public static String returnLastLine() {
         String[] l = msgArea.getText().split(System.getProperty("line.separator"));
         return l[l.length - 1];
     }
 
+    /**
+     * Starts the GUI
+     */
     public void start() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
@@ -305,10 +367,20 @@ public class MainGUI extends javax.swing.JFrame {
         });
     }
 
+    /**
+     * Updates the visible list of playlists
+     *
+     * @param s
+     */
     public static void playlistUpdate(String[] s) {
         list.setListData(s);
     }
 
+    /**
+     * Switches between login screen and playlist screen
+     *
+     * @param b
+     */
     public static void playListTab(boolean b) {
         if (b) {
             logInPanel.setEnabled(false);
@@ -323,6 +395,11 @@ public class MainGUI extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Enables/disables waiting cursor
+     *
+     * @param b
+     */
     private void cursor(boolean b) {
         if (b) {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -331,6 +408,11 @@ public class MainGUI extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Disables buttons while actions is being performed
+     *
+     * @param b
+     */
     private void disableButtons(boolean b) {
         refresh.setEnabled(!b);
         shuffle.setEnabled(!b);
@@ -341,6 +423,8 @@ public class MainGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton delete;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

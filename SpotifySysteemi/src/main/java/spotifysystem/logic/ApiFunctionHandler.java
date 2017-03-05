@@ -6,6 +6,8 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.wrapper.spotify.Api;
 import com.wrapper.spotify.methods.AddTrackToPlaylistRequest;
 import com.wrapper.spotify.methods.PlaylistTracksRequest;
+import com.wrapper.spotify.methods.RemoveTrackFromPlaylistRequest;
+import com.wrapper.spotify.methods.ReorderPlaylistTracksRequest;
 import com.wrapper.spotify.methods.ReplaceTracksInPlaylistRequest;
 import com.wrapper.spotify.methods.UserPlaylistsRequest;
 import com.wrapper.spotify.models.AuthorizationCodeCredentials;
@@ -14,6 +16,9 @@ import com.wrapper.spotify.models.RefreshAccessTokenCredentials;
 import com.wrapper.spotify.models.PlaylistTrack;
 import com.wrapper.spotify.models.PlaylistTrackPosition;
 import com.wrapper.spotify.models.SimplePlaylist;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStream;
@@ -39,6 +44,8 @@ public class ApiFunctionHandler {
     static int status;
     static String pass;
     static Api api;
+    static int localFiles;
+    static boolean lfb;
     private static AuthTimer timer = null;
 
     /**
@@ -128,6 +135,7 @@ public class ApiFunctionHandler {
      * @return error code, 0 if successfull
      */
     public static int shufflePlaylist(Playlist p, boolean b) {
+        localFiles = 0;
         api = returnApi(3);
         pass = "";
         status = 0;
@@ -139,30 +147,16 @@ public class ApiFunctionHandler {
             if (plt.isEmpty()) {
                 return 2;
             }
-            int of = 100;
-            while (true) {
-                try {
-                    request = api.getPlaylistTracks(MainLogic.getUsername(), p.getId()).offset(of).build();
-                    tracks = request.get();
-                    List<PlaylistTrack> pltt = tracks.getItems();
-                    if (pltt.isEmpty()) {
-                        break;
-                    } else {
-                        for (PlaylistTrack plst : pltt) {
-                            plt.add(plst);
-                        }
-                    }
-                    of += 100;
-                } catch (Exception t) {
-                    break;
-                }
-            }
-//            if (plt.size() != 0) {
-//                return (plt.size());
-//            }
+            int max = plt.size();
+            plt = getTracks(plt, p.getId());
+
             List<String> pltx = randomize(plt);
             List<String> clr = new ArrayList();
-            if (b) {
+            if (localFiles > 0 && b) {
+                return 4;
+//                pass = p.getId();
+//                removeTracks(pltx, p.getId());
+            } else if (b) {
                 pass = p.getId();
                 ReplaceTracksInPlaylistRequest rerequest = api.replaceTracksInPlaylist(MainLogic.getUsername(), pass, clr).build();
                 try {
@@ -177,33 +171,15 @@ public class ApiFunctionHandler {
                     return 1;
                 }
             }
-            List<String> pltr = new ArrayList();
-            while (true) {
-                int k = pltx.size();
-                if (k > 100) {
-                    for (int i = k - 1; i >= k - 100; i--) {
-                        pltr.add(pltx.get(i));
-                        pltx.remove(i);
-                    }
-                    AddTrackToPlaylistRequest arequest = api.addTracksToPlaylist(MainLogic.getUsername(), pass, pltr).position(0).build();
-                    try {
-                        arequest.get();
-                    } catch (Exception t) {
-                        error--;
-                    }
-                } else {
-                    AddTrackToPlaylistRequest arequest = api.addTracksToPlaylist(MainLogic.getUsername(), pass, pltx).position(0).build();
-                    try {
-                        arequest.get();
-                    } catch (Exception t) {
-                        return error--;
-                    }
-                    break;
-                }
-                pltr.clear();
+            error = addTracks(pltx);
+            if (localFiles > 0 && b) {
+                reorder(max, p.getId());
             }
         } catch (Exception e) {
             return 1;
+        }
+        if (localFiles > 0 && !b) {
+            return 3;
         }
         return error;
     }
@@ -238,7 +214,6 @@ public class ApiFunctionHandler {
     private static String getSuitableName(String n) {
         String[] nwords = n.split(" ");
         String[] names = MainLogic.getPlaylistNames();
-        ArrayList<String> matching = new ArrayList();
         String ln = nwords[nwords.length - 1];
         int st = 2;
         n = "";
@@ -311,8 +286,14 @@ public class ApiFunctionHandler {
             plt[r] = plt[i];
             plt[i] = x;
         }
+        String url = "";
         for (int i = 0; i < plt.length; i++) {
-            pltx.add(plt[i].getTrack().getUri());
+            url = plt[i].getTrack().getUri();
+            if (url.contains("spotify:local:")) {
+                localFiles++;
+            } else {
+                pltx.add(plt[i].getTrack().getUri());
+            }
         }
         return pltx;
     }
@@ -345,6 +326,11 @@ public class ApiFunctionHandler {
         return null;
     }
 
+    /**
+     * Removes a playlist
+     * @param plId playlist's id
+     * @return
+     */
     public static int removePlaylist(String plId) {
         HttpURLConnection connection = null;
         try {
@@ -361,7 +347,7 @@ public class ApiFunctionHandler {
 
             InputStream is = connection.getInputStream();
             BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            StringBuilder response = new StringBuilder(); // or StringBuffer if Java version 5+
+            StringBuilder response = new StringBuilder();
             String line;
             while ((line = rd.readLine()) != null) {
                 response.append(line);
@@ -374,6 +360,103 @@ public class ApiFunctionHandler {
         } finally {
             if (connection != null) {
                 connection.disconnect();
+            }
+        }
+    }
+
+    private static List<PlaylistTrack> getTracks(List<PlaylistTrack> plt, String id) {
+        int of = 100;
+        while (true) {
+            try {
+                PlaylistTracksRequest request = api.getPlaylistTracks(MainLogic.getUsername(), id).offset(of).build();
+                Page<PlaylistTrack> tracks = request.get();
+                List<PlaylistTrack> pltt = tracks.getItems();
+                if (pltt.isEmpty()) {
+                    break;
+                } else {
+                    for (PlaylistTrack plst : pltt) {
+                        plt.add(plst);
+                    }
+                }
+                of += 100;
+            } catch (Exception t) {
+                break;
+            }
+        }
+        return plt;
+    }
+
+    private static void removeTracks(List<String> plt, String id) {
+        int index = plt.size() - 1;
+        List<PlaylistTrackPosition> positions = new ArrayList();
+        while (true) {
+            try {
+                if (index < 0) {
+                    break;
+                }
+                int c = 0;
+                for (int i = index; i >= 0; i--) {
+                    index--;
+                    positions.add(new PlaylistTrackPosition(plt.get(index)));
+                    c++;
+                    if (c > 99) {
+                        break;
+                    }
+                }
+                RemoveTrackFromPlaylistRequest request = api.removeTrackFromPlaylist(MainLogic.getUsername(), id, positions).tracks(positions).build();
+                try {
+                    Thread.sleep(3000);
+                } catch (Exception e) {
+                }
+                request.get();
+                positions.clear();
+            } catch (Exception t) {
+                try {
+                    Thread.sleep(3000);
+                } catch (Exception e) {
+                }
+                break;
+            }
+        }
+    }
+
+    private static int addTracks(List<String> pltx) {
+        List<String> pltr = new ArrayList();
+        int error = 0;
+        while (true) {
+            int k = pltx.size();
+            if (k > 100) {
+                for (int i = k - 1; i >= k - 100; i--) {
+                    pltr.add(pltx.get(i));
+                    pltx.remove(i);
+                }
+                AddTrackToPlaylistRequest arequest = api.addTracksToPlaylist(MainLogic.getUsername(), pass, pltr).position(0).build();
+                try {
+                    arequest.get();
+                } catch (Exception t) {
+                    error--;
+                }
+            } else {
+                AddTrackToPlaylistRequest arequest = api.addTracksToPlaylist(MainLogic.getUsername(), pass, pltx).position(0).build();
+                try {
+                    arequest.get();
+                } catch (Exception t) {
+                    return error--;
+                }
+                break;
+            }
+            pltr.clear();
+        }
+        return error;
+    }
+
+    private static void reorder(int max, String id) {
+        for (int i = 0; i < localFiles; i++) {
+            int r = i + (int) (Math.random() * (max - i));
+            ReorderPlaylistTracksRequest request = api.reorderPlaylistTracks(MainLogic.getUsername(), id).order(i, r).build();
+            try {
+                request.get();
+            } catch (Exception e) {
             }
         }
     }

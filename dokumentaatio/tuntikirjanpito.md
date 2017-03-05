@@ -11,4 +11,8 @@ Päivä | Tunnit | Kuvaus
 14.02.2017 | 8.0h | Shufflaus-metodin tekemistä
 17.02.2017 | 6.0h | Dokumentaatiota, hieman GUIn muokkausta
 24.02.2017 | 8.0h | Shufflaus-metodi ja sen kaikki alimetodit viimein toimivat moitteetta. Dokumentaation lisäystä.
+28.02.2017 | 6.0h | Shufflaus-metodin hiominen.
+01.03.2017 | 5.0h | GUI päivittää viestejä kun ohjelma suorittaa tehtävää.
+04.03.2017 | 4.0h | Paikalliset tiedostot eivät sekoitu, kokeiltu korjata.
+05.03.2017 | 6.0h | Paikallisetin tiedostojen shufflauksen poisto, kiillotusta, dokumentaatiota
 ... | ... | ...

@@ -44,7 +44,9 @@ public class MainLogic {
     public static void logIn() {
         print("Logging in...");
         String msg = WebSite.logIn(un, pw);
+        pw = "";
         if (msg.equals("")) {
+            MainGUI.usrPrint(un, false);
             int status = ApiFunctionHandler.getTokens(WebSite.getCode());
             if (status > 1) {
                 MainGUI.playListTab(true);
@@ -54,6 +56,12 @@ public class MainLogic {
         } else {
             print(msg);
         }
+    }
+    
+    public static void logOut() {
+        MainGUI.playListTab(false);
+        print("Logged out");
+        MainGUI.usrPrint("Not logged in", true);
     }
 
     /**
@@ -73,9 +81,10 @@ public class MainLogic {
 //        conf.init();
 //        conf.printProperties();
 //    }
-    
     /**
      * Updates the list of playlists and sends it to GUI
+     *
+     * @param b whether or not new playlists will be created
      */
     public static void playlistUpdate(boolean b) {
         playlists = ApiFunctionHandler.getPlaylists();
@@ -85,7 +94,7 @@ public class MainLogic {
             MainGUI.printMessage("List updated");
         }
     }
-    
+
     /**
      * Shuffles the playlist(s)
      *
@@ -99,10 +108,6 @@ public class MainLogic {
         ArrayList<Integer> s = new ArrayList();
         for (int j = 0; j < i.length; j++) {
             int d = ApiFunctionHandler.shufflePlaylist(playlists.get(i[j]), b);
-//            if (d > 0) {
-//                MainLogic.print(d + "");
-//                return;
-//            }
             s.add(d);
         }
         if (s.size() == 1) {
@@ -110,28 +115,50 @@ public class MainLogic {
                 print("Playlist shuffled");
             } else if (s.get(0) == 2) {
                 print("Playlist is empty");
+            } else if (s.get(0) == 3) {
+                print("Playlist shuffled without local tracks");
+            } else if (s.get(0) == 4) {
+                print("Shuffling playlists with local tracks is currently not possible");
             } else {
                 print("Unable to shuffle playlist");
             }
         } else {
             int x = 0;
+            int le = 0;
+            int les = 0;
             for (int z : s) {
                 if (z == 0) {
                     x++;
+                } else if (z == 4) {
+                    le++;
+                } else if (z == 3) {
+                    les++;
                 }
             }
             if (x == 0) {
                 print("Unable to shuffle playlists");
+            } else if (le == 1) {
+                print("1 of " + s.size() + " playlists was not shuffled due to local tracks");
+            } else if (le > 1) {
+                print(le + " of " + s.size() + " playlists were not shuffled due to local tracks");
+            } else if (les > 0) {
+                print(les + " of " + s.size() + " playlists shuffled without their local tracks");
             } else if (x == s.size()) {
                 print("All " + s.size() + " playlists shuffled");
             } else {
                 print(x + " of " + s.size() + " playlists shuffled succesfully");
             }
         }
-        playlistUpdate(false);
+        playlistUpdate(
+                false);
     }
-    
-    public static void delete(int[] i, boolean b) {
+
+    /**
+     * Deletes playlists
+     *
+     * @param i selected indices
+     */
+    public static void delete(int[] i) {
         if (i == null) {
             return;
         }
@@ -163,27 +190,51 @@ public class MainLogic {
         playlistUpdate(false);
     }
 
+    /**
+     *
+     * @return
+     */
     public static String getUsername() {
         return un;
     }
 
+    /**
+     *
+     * @return
+     */
     public static String getPassword() {
         return pw;
     }
 
+    /**
+     *
+     * @return
+     */
     public static String getLog() {
         return gui.returnLog();
     }
 
+    /**
+     *
+     * @return
+     */
     public static String returnLastLine() {
         return gui.returnLastLine();
     }
 
+    /**
+     *
+     * @return
+     */
     public static ArrayList<Playlist> getPlaylists() {
         playlistUpdate(false);
         return playlists;
     }
-    
+
+    /**
+     *
+     * @return
+     */
     public static String[] getPlaylistNames() {
         String[] names = new String[playlists.size()];
         int i = 0;
