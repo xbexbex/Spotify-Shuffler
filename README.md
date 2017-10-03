@@ -1,5 +1,5 @@
 ﻿# SpotifySysteemi
-Getting tired with the attrocious Spotify shuffle algorithm? Try this simple playlist randomizer.
+Getting tired with the attrocious Spotify shuffle algorithm? Try this simple playlist randomizer, made with Java.
 
 **User instructions:**
 Simply use the form the log in to spotify using your spotify username and password. If all goes well, you should be greeted with a list of your playlists.
