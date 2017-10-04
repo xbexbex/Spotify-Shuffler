@@ -1,2 +1,2 @@
-Spotify-Shuffler/dokumentaatio/checkstyle/site/* linguist-vendored
-Spotify-Shuffler/dokumentaatio/pit/201703052110/spotifysystem/* linguist-vendored
+dokumentaatio/checkstyle/site/* linguist-vendored=false
+dokumentaatio/pit/*/spotifysystem/* linguist-vendored=false
